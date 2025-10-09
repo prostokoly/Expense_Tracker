@@ -1,0 +1,17 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "root",
+    "database": "budget_tracker_db",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "",
+    "password": "",
+    "database": "",
+    "host": "",
+    "port": null,
+    "dialect": "postgres"
+  }
+}
