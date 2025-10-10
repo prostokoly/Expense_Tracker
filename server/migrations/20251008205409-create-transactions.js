@@ -12,30 +12,39 @@ module.exports = {
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: false
       },
       amount: {
-        type: Sequelize.DECIMAL(10, 2), 
-        allowNull: false,
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
       },
       type: {
         type: Sequelize.ENUM('income', 'expense'),
-        allowNull: false,
+        allowNull: false
       },
       date: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: false
       },
-      
-      category_id: {
+      categoryId: { // <-- Это важно! camelCase
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Categories', 
-          key: 'id',         
+          model: 'Categories', // <-- Имя таблицы!
+          key: 'id'
         },
-        onUpdate: 'CASCADE', 
-        onDelete: 'CASCADE', 
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      walletId: { // <-- Это важно! camelCase
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Wallets', // <-- Имя таблицы!
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
@@ -47,7 +56,6 @@ module.exports = {
       }
     });
   },
-
   async down (queryInterface, Sequelize) {
     await queryInterface.dropTable('Transactions');
   }
