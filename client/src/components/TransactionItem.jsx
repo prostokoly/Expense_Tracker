@@ -1,24 +1,28 @@
-// src/components/TransactionItem.js
 import React from "react";
 
+// достаём категорию из конца описания
+const getCategoryFromDesc = (desc = "") => {
+    const m = desc.match(/\[(.+?)\]$/);
+    return m ? m[1] : "Без категории";
+};
+
+// убираем метку из описания
+const getCleanDesc = (desc = "") => {
+    return desc.replace(/\s*\[.+?\]$/, "").trim() || "Без описания";
+};
+
 const TransactionItem = ({ transaction }) => {
-    if (!transaction || typeof transaction !== "object") {
-        return null;
-    }
+    if (!transaction || typeof transaction !== "object") return null;
 
     try {
         const amount = parseFloat(transaction.amount) || 0;
         const type = transaction.type || "expense";
-        const description = transaction.description || "Без описания";
         const date = transaction.date
             ? new Date(transaction.date).toLocaleDateString("ru-RU")
             : "Не указана";
-        const categoryName =
-            transaction.category?.name ||
-            transaction.categoryId ||
-            "Не указана";
-        const walletName =
-            transaction.wallet?.name || transaction.walletId || "Не указан";
+
+        const cleanDesc = getCleanDesc(transaction.description);
+        const category = getCategoryFromDesc(transaction.description);
 
         const displayAmount =
             type === "income"
@@ -27,6 +31,8 @@ const TransactionItem = ({ transaction }) => {
         const amountColor = type === "income" ? "#28a745" : "#dc3545";
         const backgroundColor = type === "income" ? "#f0fff0" : "#fff0f0";
 
+        const walletName = transaction.wallet?.name || "Не указан";
+
         return (
             <div
                 style={{
@@ -34,7 +40,7 @@ const TransactionItem = ({ transaction }) => {
                     margin: "8px 0",
                     border: "1px solid #dee2e6",
                     borderRadius: "6px",
-                    backgroundColor: backgroundColor,
+                    backgroundColor,
                 }}
             >
                 <div
@@ -44,8 +50,9 @@ const TransactionItem = ({ transaction }) => {
                         fontSize: "16px",
                     }}
                 >
-                    {description}
+                    {cleanDesc}
                 </div>
+
                 <div
                     style={{
                         display: "grid",
@@ -70,7 +77,9 @@ const TransactionItem = ({ transaction }) => {
                         <strong>Дата:</strong> {date}
                     </div>
                     <div>
-                        <strong>Категория:</strong> {categoryName}
+                        <strong>Категория:</strong>{" "}
+                        {localStorage.getItem("lastCategory") ||
+                            "Без категории"}
                     </div>
                     <div>
                         <strong>Кошелек:</strong> {walletName}
@@ -79,7 +88,6 @@ const TransactionItem = ({ transaction }) => {
             </div>
         );
     } catch (error) {
-        console.error("Ошибка рендеринга транзакции:", transaction, error);
         return null;
     }
 };

@@ -1,7 +1,7 @@
 // src/components/CategoriesPanel.js
 import React from "react";
 import ErrorDisplay from "./ErrorBoundary";
-
+import { deleteCategory } from "../services/api";
 const CategoriesPanel = ({ categories, loading, error, onRetry }) => {
     return (
         <div
@@ -54,6 +54,7 @@ const CategoriesPanel = ({ categories, loading, error, onRetry }) => {
                             }}
                         >
                             <strong>{category.name}</strong>
+
                             <span
                                 style={{
                                     color:
@@ -69,6 +70,29 @@ const CategoriesPanel = ({ categories, loading, error, onRetry }) => {
                                     : "расход"}
                                 )
                             </span>
+                            <button
+                                onClick={async () => {
+                                    if (
+                                        !window.confirm(
+                                            `Удалить категорию «${category.name}»?`,
+                                        )
+                                    )
+                                        return;
+                                    try {
+                                        await deleteCategory(category.id);
+                                        onRetry();
+                                    } catch (e) {
+                                        alert(e.message);
+                                    }
+                                }}
+                                style={{
+                                    marginLeft: 10,
+                                    color: "red",
+                                    fontSize: 12,
+                                }}
+                            >
+                                Удалить
+                            </button>
                         </div>
                     ))}
                 </div>

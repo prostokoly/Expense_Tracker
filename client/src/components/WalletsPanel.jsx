@@ -1,7 +1,7 @@
 // src/components/WalletsPanel.js
 import React from "react";
 import ErrorDisplay from "./ErrorBoundary";
-
+import { deleteWallet } from "../services/api";
 const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
     return (
         <div
@@ -50,6 +50,7 @@ const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
                             }}
                         >
                             <strong>{wallet.name}</strong>
+
                             <span
                                 style={{
                                     color:
@@ -62,6 +63,29 @@ const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
                             >
                                 {wallet.balance} {wallet.currency}
                             </span>
+                            <button
+                                onClick={async () => {
+                                    if (
+                                        !window.confirm(
+                                            `Удалить кошелёк «${wallet.name}»?`,
+                                        )
+                                    )
+                                        return;
+                                    try {
+                                        await deleteWallet(wallet.id);
+                                        onRetry(); // перезагружает список
+                                    } catch (e) {
+                                        alert(e.message);
+                                    }
+                                }}
+                                style={{
+                                    marginLeft: 10,
+                                    color: "red",
+                                    fontSize: 12,
+                                }}
+                            >
+                                Удалить
+                            </button>
                         </div>
                     ))}
                 </div>

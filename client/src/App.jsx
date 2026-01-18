@@ -6,48 +6,41 @@ import {
     getAllWallets,
 } from "./services/api";
 import { safeApiCall } from "./utils/apiHelper";
-import CategoryForm from "./components/CategoryForm";
+// import CategoryForm from "./components/CategoryForm";
 import TransactionForm from "./components/TransactionForm";
 import WalletForm from "./components/WalletForm";
 import WelcomeScreen from "./components/WelcomeScreen";
 import Header from "./components/Header";
-import CategoriesPanel from "./components/CategoriesPanel";
+// import CategoriesPanel from "./components/CategoriesPanel";
 import WalletsPanel from "./components/WalletsPanel";
 import TransactionsPanel from "./components/TransactionsPanel";
 import "./App.css";
+// import AnalyticsPanel from "./components/AnalyticsPanel";
 
 function App() {
-    // Состояние для приветственного экрана
     const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
-
-    // Данные
-    const [categories, setCategories] = useState([]);
+    // const [categories, setCategories] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [wallets, setWallets] = useState([]);
 
-    // Состояние загрузки
     const [loading, setLoading] = useState({
         categories: false,
         transactions: false,
         wallets: false,
     });
 
-    // Ошибки
     const [error, setError] = useState({
         categories: null,
         transactions: null,
         wallets: null,
     });
 
-    // Единое состояние для активной вкладки
     const [activeTab, setActiveTab] = useState(null); // null, 'categories', 'transactions', 'wallets'
 
-    // Вычисляемые значения для отображения форм
-    const showCategoryForm = activeTab === "categories";
+    //const showCategoryForm = activeTab === "categories";
     const showTransactionForm = activeTab === "transactions";
     const showWalletForm = activeTab === "wallets";
 
-    // Функции загрузки данных
     const loadCategories = async () => {
         setLoading((prev) => ({ ...prev, categories: true }));
         const result = await safeApiCall(getAllCategories, []);
@@ -72,32 +65,20 @@ function App() {
         setLoading((prev) => ({ ...prev, wallets: false }));
     };
 
-    // Обработчики вкладок
     const handleTabChange = (tab) => {
-        // Если нажимаем на уже активную вкладку - закрываем её
-        // Иначе открываем новую вкладку
         setActiveTab(activeTab === tab ? null : tab);
     };
-
+    const showAnalytics = activeTab === "analytics";
     useEffect(() => {
         if (!showWelcomeScreen) {
-            loadCategories();
+            // loadCategories();
             loadTransactions();
             loadWallets();
         }
     }, [showWelcomeScreen]);
 
-    const calculateTotalBalance = () => {
-        return transactions.reduce((sum, transaction) => {
-            try {
-                const amount = parseFloat(transaction?.amount) || 0;
-                const type = transaction?.type || "expense";
-                return type === "income" ? sum + amount : sum - amount;
-            } catch (error) {
-                return sum;
-            }
-        }, 0);
-    };
+    const calculateTotalBalance = () =>
+        wallets.reduce((sum, w) => sum + (parseFloat(w.balance) || 0), 0);
 
     if (showWelcomeScreen) {
         return <WelcomeScreen onStart={() => setShowWelcomeScreen(false)} />;
@@ -121,14 +102,12 @@ function App() {
                 onTabChange={handleTabChange}
             />
 
-            {/* Форма категорий */}
-            {showCategoryForm && (
+            {/* {showCategoryForm && (
                 <div style={{ marginBottom: "20px" }}>
                     <CategoryForm onCategoryCreated={loadCategories} />
                 </div>
-            )}
+            )} */}
 
-            {/* Форма транзакций */}
             {showTransactionForm && (
                 <div style={{ marginBottom: "20px" }}>
                     <TransactionForm
@@ -145,6 +124,11 @@ function App() {
                     <WalletForm onWalletCreated={loadWallets} />
                 </div>
             )}
+            {/* {showAnalytics && (
+                <div style={{ marginBottom: "20px" }}>
+                    <AnalyticsPanel transactions={transactions} />
+                </div>
+            )} */}
 
             <div
                 style={{
@@ -155,12 +139,12 @@ function App() {
                 }}
             >
                 <div>
-                    <CategoriesPanel
+                    {/* <CategoriesPanel
                         categories={categories}
                         loading={loading.categories}
                         error={error.categories}
                         onRetry={loadCategories}
-                    />
+                    /> */}
                     <WalletsPanel
                         wallets={wallets}
                         loading={loading.wallets}

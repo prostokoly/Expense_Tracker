@@ -1,87 +1,88 @@
-
 const db = require("../models");
-
 
 exports.getAllTransactions = async (req, res) => {
     try {
         const transactions = await db.Transaction.findAll({
             include: [
-                { model: db.Category, as: "category" },
-                { model: db.Wallet, as: "wallet" },
+                {
+                    model: db.Category,
+                    as: "category",
+                    attributes: ["id", "name", "type"],
+                },
+                {
+                    model: db.Wallet,
+                    as: "wallet",
+                    attributes: ["id", "name", "balance"],
+                },
             ],
             order: [["date", "DESC"]],
         });
         res.status(200).json(transactions);
     } catch (error) {
-        console.error("Get transactions error:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
-
-
 exports.createTransaction = async (req, res) => {
     const t = await db.sequelize.transaction();
-
     try {
-        console.log("Create transaction body:", req.body);
-
-        const { wallet_id, amount, type } = req.body;
+        const { wallet_id, amount, type, category_id } = req.body;
         const numericAmount = parseFloat(amount) || 0;
 
-        
-        if (req.body.category_id) {
-            const category = await db.Category.findByPk(req.body.category_id, {
+        // 1. Проверяем / подставляем категорию
+        let finalCategoryId = category_id;
+        if (finalCategoryId) {
+            const cat = await db.Category.findByPk(finalCategoryId, {
                 transaction: t,
             });
-            if (!category) {
-                const defaultCategory = await db.Category.findOne({
-                    where: { type: req.body.type || "income" },
-                    transaction: t,
-                });
-                req.body.category_id = defaultCategory
-                    ? defaultCategory.id
-                    : null;
-            }
+            if (!cat) finalCategoryId = null;
+        }
+        if (!finalCategoryId) {
+            const defaultCat = await db.Category.findOne({
+                where: { type: type || "income" },
+                transaction: t,
+            });
+            finalCategoryId = defaultCat ? defaultCat.id : null;
         }
 
-        
+        // 2. Проверяем кошелёк
         const wallet = await db.Wallet.findByPk(wallet_id, { transaction: t });
         if (!wallet) {
             await t.rollback();
             return res.status(404).json({ message: "Wallet not found" });
         }
 
-        
+        // 3. Обновляем баланс
         let newBalance = parseFloat(wallet.balance) || 0;
-        if (type === "income") {
-            newBalance += numericAmount;
-        } else if (type === "expense") {
-            newBalance -= numericAmount;
-        }
-
+        if (type === "income") newBalance += numericAmount;
+        else if (type === "expense") newBalance -= numericAmount;
         await wallet.update({ balance: newBalance }, { transaction: t });
 
-        
-        const transaction = await db.Transaction.create(req.body, {
-            transaction: t,
-        });
+        // 4. Создаём транзакцию
+        const transaction = await db.Transaction.create(
+            { ...req.body, category_id: finalCategoryId },
+            { transaction: t },
+        );
 
-        
         await t.commit();
 
-        
+        // 5. Отдаём с связями
         const result = await db.Transaction.findByPk(transaction.id, {
             include: [
-                { model: db.Category, as: "category" },
-                { model: db.Wallet, as: "wallet" },
+                {
+                    model: db.Category,
+                    as: "category",
+                    attributes: ["id", "name", "type"],
+                },
+                {
+                    model: db.Wallet,
+                    as: "wallet",
+                    attributes: ["id", "name", "balance"],
+                },
             ],
         });
-
         res.status(201).json(result);
     } catch (error) {
         await t.rollback();
-        console.error("Create transaction error:", error);
-
         if (error.name === "SequelizeForeignKeyConstraintError") {
             res.status(400).json({
                 message: "Invalid category or wallet",
@@ -96,45 +97,44 @@ exports.createTransaction = async (req, res) => {
     }
 };
 
-
 exports.deleteTransaction = async (req, res) => {
     const t = await db.sequelize.transaction();
 
     try {
-        const transaction = await db.Transaction.findByPk(req.params.id, {
+        // 1. Берём транзакцию ВМЕСТЕ с категорией и кошельком
+        const tx = await db.Transaction.findByPk(req.params.id, {
             transaction: t,
-            include: [{ model: db.Wallet, as: "wallet" }],
+            include: [
+                { model: db.Category, as: "category", attributes: ["type"] },
+                {
+                    model: db.Wallet,
+                    as: "wallet",
+                    attributes: ["id", "balance"],
+                },
+            ],
         });
 
-        if (!transaction) {
+        if (!tx) {
             await t.rollback();
             return res.status(404).json({ message: "Transaction not found" });
         }
 
-        
-        if (transaction.wallet) {
-            const wallet = transaction.wallet;
-            const amount = parseFloat(transaction.amount) || 0;
-            let newBalance = parseFloat(wallet.balance) || 0;
+        // 2. Откатываем баланс
+        const amount = parseFloat(tx.amount) || 0;
+        let balance = parseFloat(tx.wallet.balance) || 0;
 
-            
-            if (transaction.type === "income") {
-                newBalance -= amount; 
-            } else if (transaction.type === "expense") {
-                newBalance += amount; 
-            }
+        if (tx.category?.type === "income") balance -= amount;
+        else balance += amount;
 
-            await wallet.update({ balance: newBalance }, { transaction: t });
-        }
+        await tx.wallet.update({ balance }, { transaction: t });
 
-        
-        await transaction.destroy({ transaction: t });
-
+        // 3. Удаляем саму запись
+        await tx.destroy({ transaction: t });
         await t.commit();
-        res.status(204).send();
-    } catch (error) {
+
+        res.status(204).send(); // No Content
+    } catch (err) {
         await t.rollback();
-        console.error("Delete transaction error:", error);
-        res.status(500).json({ message: "Server Error", error: error.message });
+        res.status(500).json({ message: "Server Error", error: err.message });
     }
 };
