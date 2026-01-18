@@ -1,4 +1,4 @@
-// server/models/Category.js
+
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
@@ -15,12 +15,12 @@ module.exports = (sequelize) => {
     }, {
         tableName: 'Categories',
         timestamps: true,
-        //underscored: true, // Добавляем эту опцию
+        
     });
 
     Category.associate = (models) => {
         Category.hasMany(models.Transaction, {
-            foreignKey: 'category_id', // Меняем на snake_case
+            foreignKey: 'category_id', 
             as: 'transactions',
             onDelete: 'CASCADE',
         });

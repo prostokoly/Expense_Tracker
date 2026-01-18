@@ -1,4 +1,4 @@
-// server/models/Wallet.js
+
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
@@ -20,12 +20,12 @@ module.exports = (sequelize) => {
     }, {
         tableName: 'Wallets',
         timestamps: true,
-       // underscored: true, // Добавляем эту опцию
+       
     });
 
     Wallet.associate = (models) => {
         Wallet.hasMany(models.Transaction, {
-            foreignKey: 'wallet_id', // Меняем на snake_case
+            foreignKey: 'wallet_id', 
             as: 'transactions',
             onDelete: 'CASCADE',
         });

@@ -1,6 +1,6 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.createTable('Transactions', {
@@ -26,21 +26,21 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false
       },
-      categoryId: { // <-- Это важно! camelCase
+      categoryId: { 
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Categories', // <-- Имя таблицы!
+          model: 'Categories', 
           key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      walletId: { // <-- Это важно! camelCase
+      walletId: { 
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Wallets', // <-- Имя таблицы!
+          model: 'Wallets', 
           key: 'id'
         },
         onUpdate: 'CASCADE',

@@ -4,7 +4,7 @@ import { createCategory } from '../services/api';
 function CategoryForm(
    { onCategoryCreated } ) {
     const [name, setName] = useState('');
-    const [type, setType] = useState('expense'); // Значение по умолчанию
+    const [type, setType] = useState('expense'); 
     const [error, setError] = useState(null);
 
     const handleSubmit = async (e) => {

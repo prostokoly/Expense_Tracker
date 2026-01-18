@@ -1,4 +1,4 @@
-// client/src/components/TransactionForm.js
+
 import React, { useState, useEffect } from 'react';
 import { createTransaction, getAllCategories, getAllWallets } from '../services/api';
 
@@ -16,7 +16,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Красивые категории с иконками
+    
     const expenseCategories = [
         { id: '1', name: '🛒 Шоппинг', type: 'expense' },
         { id: '2', name: '🍕 Еда', type: 'expense' },
@@ -46,10 +46,10 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 const walletsResponse = await getAllWallets();
                 setWallets(walletsResponse.data);
 
-                // Используем красивые категории вместо API
+                
                 setCategories([...expenseCategories, ...incomeCategories]);
 
-                // Устанавливаем первые значения по умолчанию
+                
                 if (walletsResponse.data.length > 0) {
                     setFormData(prev => ({
                         ...prev,
@@ -86,7 +86,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
         setFormData(prev => ({
             ...prev,
             type,
-            categoryId: '' // Сбрасываем категорию при смене типа
+            categoryId: '' 
         }));
     };
 
@@ -102,7 +102,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
         setError('');
         setLoading(true);
 
-        // Валидация
+        
         if (!formData.description.trim()) {
             setError('Введите описание транзакции');
             setLoading(false);
@@ -137,7 +137,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
             await createTransaction(transactionData);
             console.log('Транзакция успешно создана!');
             
-            // Сброс формы
+            
             setFormData({
                 description: '',
                 amount: '',
@@ -194,7 +194,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 </div>
             )}
             
-            {/* Выбор типа транзакции */}
+            {}
             <div style={{ 
                 display: 'flex', 
                 gap: '10px', 
@@ -239,7 +239,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 </button>
             </div>
             
-            {/* Поле описания */}
+            {}
             <div style={{ marginBottom: '20px' }}>
                 <label style={{
                     display: 'block',
@@ -267,7 +267,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 />
             </div>
             
-            {/* Поле суммы */}
+            {}
             <div style={{ marginBottom: '20px' }}>
                 <label style={{
                     display: 'block',
@@ -297,7 +297,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 />
             </div>
             
-            {/* Выбор категории */}
+            {}
             <div style={{ marginBottom: '20px' }}>
                 <label style={{
                     display: 'block',
@@ -337,7 +337,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 </div>
             </div>
             
-            {/* Выбор кошелька */}
+            {}
             <div style={{ marginBottom: '25px' }}>
                 <label style={{
                     display: 'block',
@@ -370,7 +370,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 </select>
             </div>
             
-            {/* Дата */}
+            {}
             <div style={{ marginBottom: '25px' }}>
                 <label style={{
                     display: 'block',
@@ -396,7 +396,7 @@ const TransactionForm = ({ onTransactionCreated }) => {
                 />
             </div>
             
-            {/* Кнопка отправки */}
+            {}
             <button 
                 type="submit" 
                 disabled={loading}
