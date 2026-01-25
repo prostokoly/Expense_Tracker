@@ -1,22 +1,100 @@
-// src/components/TransactionsPanel.js
-import React from "react";
+import React, { useState } from "react";
 import ErrorDisplay from "./ErrorBoundary";
 import TransactionItem from "./TransactionItem";
-import { deleteTransaction } from "../services/api"; // ✅ 1
+import { deleteTransaction } from "../services/api";
 
 const TransactionsPanel = ({ transactions, loading, error, onRetry }) => {
+    const [sortBy, setSortBy] = useState("date");
+    const [sortOrder, setSortOrder] = useState("desc");
+
+    const sortedTransactions = [...transactions].sort((a, b) => {
+        let comparison = 0;
+        if (sortBy === "date") {
+            comparison = new Date(a.date) - new Date(b.date);
+        } else if (sortBy === "amount") {
+            comparison = a.amount - b.amount;
+        }
+        return sortOrder === "asc" ? comparison : -comparison;
+    });
+
+    const handleSort = (field) => {
+        if (sortBy === field) {
+            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        } else {
+            setSortBy(field);
+            setSortOrder("desc");
+        }
+    };
+
+    const getArrow = (field) => {
+        if (sortBy !== field) return "↕️";
+        return sortOrder === "asc" ? "↑" : "↓";
+    };
+
     return (
         <div
             style={{
-                backgroundColor: "white",
+                backgroundColor: "var(--card-bg)",
+                color: "var(--text-color)",
                 padding: "20px",
                 borderRadius: "10px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                boxShadow: "var(--shadow)",
             }}
         >
-            <h2 style={{ color: "#2c3e50", marginBottom: "20px" }}>
+            <h2 style={{ color: "var(--text-color)", marginBottom: "20px" }}>
                 💳 Транзакции
             </h2>
+
+            {!loading && !error && transactions.length > 0 && (
+                <div
+                    style={{
+                        marginBottom: "15px",
+                        display: "flex",
+                        gap: "10px",
+                    }}
+                >
+                    <button
+                        onClick={() => handleSort("date")}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "5px",
+                            border: "1px solid var(--border-color)",
+                            backgroundColor:
+                                sortBy === "date"
+                                    ? "var(--button-bg)"
+                                    : "var(--card-bg)",
+                            color:
+                                sortBy === "date"
+                                    ? "var(--button-text)"
+                                    : "var(--text-color)",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                        }}
+                    >
+                        Дата {getArrow("date")}
+                    </button>
+                    <button
+                        onClick={() => handleSort("amount")}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "5px",
+                            border: "1px solid var(--border-color)",
+                            backgroundColor:
+                                sortBy === "amount"
+                                    ? "var(--button-bg)"
+                                    : "var(--card-bg)",
+                            color:
+                                sortBy === "amount"
+                                    ? "var(--button-text)"
+                                    : "var(--text-color)",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                        }}
+                    >
+                        Сумма {getArrow("amount")}
+                    </button>
+                </div>
+            )}
 
             {loading ? (
                 <div style={{ textAlign: "center", padding: "20px" }}>
@@ -33,55 +111,52 @@ const TransactionsPanel = ({ transactions, loading, error, onRetry }) => {
                     style={{
                         textAlign: "center",
                         padding: "20px",
-                        color: "#6c757d",
+                        color: "var(--text-color)",
+                        opacity: 0.7,
                     }}
                 >
                     📭 Нет транзакций
                 </div>
             ) : (
                 <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-                    {transactions
-                        .map((transaction) => (
-                            <div
-                                key={transaction.id}
+                    {sortedTransactions.map((transaction) => (
+                        <div
+                            key={transaction.id}
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                padding: "8px 0",
+                                borderBottom: "1px solid var(--border-color)",
+                            }}
+                        >
+                            <TransactionItem transaction={transaction} />
+                            <button
+                                onClick={async () => {
+                                    if (!window.confirm("Удалить транзакцию?"))
+                                        return;
+                                    try {
+                                        await deleteTransaction(transaction.id);
+                                        onRetry();
+                                    } catch (e) {
+                                        alert(e.message);
+                                    }
+                                }}
                                 style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    padding: "8px 0",
-                                    borderBottom: "1px solid #eee",
+                                    marginLeft: 10,
+                                    color: "#e74c3c",
+                                    fontSize: 12,
+                                    backgroundColor: "transparent",
+                                    border: "1px solid #e74c3c",
+                                    borderRadius: "4px",
+                                    padding: "4px 8px",
+                                    cursor: "pointer",
                                 }}
                             >
-                                <TransactionItem transaction={transaction} />
-                                {/* ✅ 2 кнопка удаления */}
-                                <button
-                                    onClick={async () => {
-                                        if (
-                                            !window.confirm(
-                                                "Удалить транзакцию?",
-                                            )
-                                        )
-                                            return;
-                                        try {
-                                            await deleteTransaction(
-                                                transaction.id,
-                                            );
-                                            onRetry(); // перезагружаем список
-                                        } catch (e) {
-                                            alert(e.message);
-                                        }
-                                    }}
-                                    style={{
-                                        marginLeft: 10,
-                                        color: "red",
-                                        fontSize: 12,
-                                    }}
-                                >
-                                    Удалить
-                                </button>
-                            </div>
-                        ))
-                        .filter(Boolean)}
+                                Удалить
+                            </button>
+                        </div>
+                    ))}
                 </div>
             )}
         </div>

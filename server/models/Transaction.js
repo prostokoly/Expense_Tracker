@@ -1,4 +1,3 @@
-// server/models/Transaction.js
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
@@ -31,11 +30,11 @@ module.exports = (sequelize) => {
 
     Transaction.associate = (models) => {
         Transaction.belongsTo(models.Wallet, {
-            foreignKey: "wallet_id", // Меняем на snake_case
+            foreignKey: "wallet_id",
             as: "wallet",
         });
         Transaction.belongsTo(models.Category, {
-            foreignKey: "category_id", // Меняем на snake_case
+            foreignKey: "category_id",
             as: "category",
         });
     };

@@ -1,53 +1,37 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
-import {
-    getAllCategories,
-    getAllTransactions,
-    getAllWallets,
-} from "./services/api";
+import { getAllTransactions, getAllWallets } from "./services/api";
 import { safeApiCall } from "./utils/apiHelper";
-// import CategoryForm from "./components/CategoryForm";
 import TransactionForm from "./components/TransactionForm";
 import WalletForm from "./components/WalletForm";
 import WelcomeScreen from "./components/WelcomeScreen";
 import Header from "./components/Header";
-// import CategoriesPanel from "./components/CategoriesPanel";
 import WalletsPanel from "./components/WalletsPanel";
 import TransactionsPanel from "./components/TransactionsPanel";
+import GoalsPanel from "./components/GoalsPanel";
+import ThemeToggle from "./components/ThemeToggle";
+import { ThemeProvider } from "./context/ThemeContext";
 import "./App.css";
-// import AnalyticsPanel from "./components/AnalyticsPanel";
 
-function App() {
+function AppContent() {
     const [showWelcomeScreen, setShowWelcomeScreen] = useState(true);
-    // const [categories, setCategories] = useState([]);
     const [transactions, setTransactions] = useState([]);
     const [wallets, setWallets] = useState([]);
 
     const [loading, setLoading] = useState({
-        categories: false,
         transactions: false,
         wallets: false,
     });
 
     const [error, setError] = useState({
-        categories: null,
         transactions: null,
         wallets: null,
     });
 
-    const [activeTab, setActiveTab] = useState(null); // null, 'categories', 'transactions', 'wallets'
+    const [activeTab, setActiveTab] = useState(null);
 
-    //const showCategoryForm = activeTab === "categories";
     const showTransactionForm = activeTab === "transactions";
     const showWalletForm = activeTab === "wallets";
-
-    const loadCategories = async () => {
-        setLoading((prev) => ({ ...prev, categories: true }));
-        const result = await safeApiCall(getAllCategories, []);
-        setCategories(result.data);
-        setError((prev) => ({ ...prev, categories: result.error }));
-        setLoading((prev) => ({ ...prev, categories: false }));
-    };
+    const showGoals = activeTab === "goals";
 
     const loadTransactions = async () => {
         setLoading((prev) => ({ ...prev, transactions: true }));
@@ -68,10 +52,9 @@ function App() {
     const handleTabChange = (tab) => {
         setActiveTab(activeTab === tab ? null : tab);
     };
-    const showAnalytics = activeTab === "analytics";
+
     useEffect(() => {
         if (!showWelcomeScreen) {
-            // loadCategories();
             loadTransactions();
             loadWallets();
         }
@@ -94,19 +77,16 @@ function App() {
                 fontFamily: "Arial, sans-serif",
                 maxWidth: "1200px",
                 margin: "0 auto",
+                minHeight: "100vh",
             }}
         >
+            <ThemeToggle />
+
             <Header
                 totalBalance={totalBalance}
                 activeTab={activeTab}
                 onTabChange={handleTabChange}
             />
-
-            {/* {showCategoryForm && (
-                <div style={{ marginBottom: "20px" }}>
-                    <CategoryForm onCategoryCreated={loadCategories} />
-                </div>
-            )} */}
 
             {showTransactionForm && (
                 <div style={{ marginBottom: "20px" }}>
@@ -124,45 +104,56 @@ function App() {
                     <WalletForm onWalletCreated={loadWallets} />
                 </div>
             )}
-            {/* {showAnalytics && (
-                <div style={{ marginBottom: "20px" }}>
-                    <AnalyticsPanel transactions={transactions} />
-                </div>
-            )} */}
 
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "30px",
-                    alignItems: "start",
-                }}
-            >
-                <div>
-                    {/* <CategoriesPanel
-                        categories={categories}
-                        loading={loading.categories}
-                        error={error.categories}
-                        onRetry={loadCategories}
-                    /> */}
-                    <WalletsPanel
-                        wallets={wallets}
-                        loading={loading.wallets}
-                        error={error.wallets}
-                        onRetry={loadWallets}
-                    />
+            {showGoals && (
+                <div
+                    style={{
+                        marginBottom: "20px",
+                        maxWidth: "600px",
+                        margin: "0 auto 20px",
+                    }}
+                >
+                    <GoalsPanel />
                 </div>
+            )}
 
-                <div>
-                    <TransactionsPanel
-                        transactions={transactions}
-                        loading={loading.transactions}
-                        error={error.transactions}
-                        onRetry={loadTransactions}
-                    />
+            {!showGoals && (
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "30px",
+                        alignItems: "start",
+                    }}
+                >
+                    <div>
+                        <WalletsPanel
+                            wallets={wallets}
+                            loading={loading.wallets}
+                            error={error.wallets}
+                            onRetry={loadWallets}
+                        />
+                    </div>
+
+                    <div>
+                        <TransactionsPanel
+                            transactions={transactions}
+                            loading={loading.transactions}
+                            error={error.transactions}
+                            onRetry={loadTransactions}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
+    );
+}
+
+function App() {
+    return (
+        <ThemeProvider>
+            <AppContent />
+        </ThemeProvider>
     );
 }
 

@@ -1,18 +1,19 @@
-// src/components/WalletsPanel.js
 import React from "react";
 import ErrorDisplay from "./ErrorBoundary";
 import { deleteWallet } from "../services/api";
+
 const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
     return (
         <div
             style={{
-                backgroundColor: "white",
+                backgroundColor: "var(--card-bg)",
+                color: "var(--text-color)",
                 padding: "20px",
                 borderRadius: "10px",
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                boxShadow: "var(--shadow)",
             }}
         >
-            <h2 style={{ color: "#2c3e50", marginBottom: "20px" }}>
+            <h2 style={{ color: "var(--text-color)", marginBottom: "20px" }}>
                 💼 Кошельки
             </h2>
 
@@ -31,7 +32,8 @@ const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
                     style={{
                         textAlign: "center",
                         padding: "20px",
-                        color: "#6c757d",
+                        color: "var(--text-color)",
+                        opacity: 0.7,
                     }}
                 >
                     📭 Нет кошельков
@@ -44,19 +46,19 @@ const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
                             style={{
                                 padding: "10px",
                                 margin: "5px 0",
-                                border: "1px solid #dee2e6",
+                                border: "1px solid var(--border-color)",
                                 borderRadius: "4px",
-                                backgroundColor: "#f8f9fa",
+                                backgroundColor: "var(--bg-color)",
+                                color: "var(--text-color)",
                             }}
                         >
                             <strong>{wallet.name}</strong>
-
                             <span
                                 style={{
                                     color:
                                         wallet.balance >= 0
-                                            ? "#28a745"
-                                            : "#dc3545",
+                                            ? "var(--income-color)"
+                                            : "var(--expense-color)",
                                     marginLeft: "10px",
                                     fontWeight: "bold",
                                 }}
@@ -73,15 +75,20 @@ const WalletsPanel = ({ wallets, loading, error, onRetry }) => {
                                         return;
                                     try {
                                         await deleteWallet(wallet.id);
-                                        onRetry(); // перезагружает список
+                                        onRetry();
                                     } catch (e) {
                                         alert(e.message);
                                     }
                                 }}
                                 style={{
                                     marginLeft: 10,
-                                    color: "red",
+                                    color: "#e74c3c",
                                     fontSize: 12,
+                                    backgroundColor: "transparent",
+                                    border: "1px solid #e74c3c",
+                                    borderRadius: "4px",
+                                    padding: "4px 8px",
+                                    cursor: "pointer",
                                 }}
                             >
                                 Удалить

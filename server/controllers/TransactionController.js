@@ -28,7 +28,6 @@ exports.createTransaction = async (req, res) => {
         const { wallet_id, amount, type, category_id } = req.body;
         const numericAmount = parseFloat(amount) || 0;
 
-        // 1. Проверяем / подставляем категорию
         let finalCategoryId = category_id;
         if (finalCategoryId) {
             const cat = await db.Category.findByPk(finalCategoryId, {
@@ -44,20 +43,17 @@ exports.createTransaction = async (req, res) => {
             finalCategoryId = defaultCat ? defaultCat.id : null;
         }
 
-        // 2. Проверяем кошелёк
         const wallet = await db.Wallet.findByPk(wallet_id, { transaction: t });
         if (!wallet) {
             await t.rollback();
             return res.status(404).json({ message: "Wallet not found" });
         }
 
-        // 3. Обновляем баланс
         let newBalance = parseFloat(wallet.balance) || 0;
         if (type === "income") newBalance += numericAmount;
         else if (type === "expense") newBalance -= numericAmount;
         await wallet.update({ balance: newBalance }, { transaction: t });
 
-        // 4. Создаём транзакцию
         const transaction = await db.Transaction.create(
             { ...req.body, category_id: finalCategoryId },
             { transaction: t },
@@ -65,7 +61,6 @@ exports.createTransaction = async (req, res) => {
 
         await t.commit();
 
-        // 5. Отдаём с связями
         const result = await db.Transaction.findByPk(transaction.id, {
             include: [
                 {
@@ -101,7 +96,6 @@ exports.deleteTransaction = async (req, res) => {
     const t = await db.sequelize.transaction();
 
     try {
-        // 1. Берём транзакцию ВМЕСТЕ с категорией и кошельком
         const tx = await db.Transaction.findByPk(req.params.id, {
             transaction: t,
             include: [
@@ -119,7 +113,6 @@ exports.deleteTransaction = async (req, res) => {
             return res.status(404).json({ message: "Transaction not found" });
         }
 
-        // 2. Откатываем баланс
         const amount = parseFloat(tx.amount) || 0;
         let balance = parseFloat(tx.wallet.balance) || 0;
 
@@ -128,11 +121,10 @@ exports.deleteTransaction = async (req, res) => {
 
         await tx.wallet.update({ balance }, { transaction: t });
 
-        // 3. Удаляем саму запись
         await tx.destroy({ transaction: t });
         await t.commit();
 
-        res.status(204).send(); // No Content
+        res.status(204).send();
     } catch (err) {
         await t.rollback();
         res.status(500).json({ message: "Server Error", error: err.message });

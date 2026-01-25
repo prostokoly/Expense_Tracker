@@ -31,14 +31,12 @@ api.interceptors.response.use(
     },
 );
 
-// Категории
 export const getAllCategories = () => api.get("/categories");
 export const createCategory = (category) => api.post("/categories", category);
 export const updateCategory = (id, category) =>
     api.put(`/categories/${id}`, category);
 export const deleteCategory = (id) => api.delete(`/categories/${id}`);
 
-// Транзакции
 export const getAllTransactions = () => api.get("/transactions");
 export const createTransaction = (transaction) =>
     api.post("/transactions", transaction);
@@ -46,7 +44,6 @@ export const updateTransaction = (id, transaction) =>
     api.put(`/transactions/${id}`, transaction);
 export const deleteTransaction = (id) => api.delete(`/transactions/${id}`);
 
-// Кошельки
 export const getAllWallets = () => api.get("/wallets");
 export const createWallet = (wallet) => api.post("/wallets", wallet);
 export const updateWallet = (id, wallet) => api.put(`/wallets/${id}`, wallet);

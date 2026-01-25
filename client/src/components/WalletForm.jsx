@@ -1,4 +1,3 @@
-// src/components/WalletForm.js
 import React, { useState } from "react";
 import { createWallet } from "../services/api";
 
@@ -22,17 +21,37 @@ const WalletForm = ({ onWalletCreated }) => {
         }
     };
 
+    const inputStyle = {
+        width: "100%",
+        padding: "8px",
+        borderRadius: "4px",
+        border: "1px solid var(--border-color)",
+        backgroundColor: "var(--bg-color)",
+        color: "var(--text-color)",
+        fontSize: "14px",
+    };
+
+    const labelStyle = {
+        display: "block",
+        marginBottom: "5px",
+        color: "var(--text-color)",
+        fontSize: "14px",
+    };
+
     return (
         <div
             style={{
                 marginBottom: "20px",
                 padding: "15px",
-                border: "1px solid #dee2e6",
+                border: "1px solid var(--border-color)",
                 borderRadius: "8px",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: "var(--card-bg)",
+                color: "var(--text-color)",
             }}
         >
-            <h3 style={{ marginTop: 0 }}>💼 Добавить кошелек</h3>
+            <h3 style={{ marginTop: 0, color: "var(--text-color)" }}>
+                💼 Добавить кошелек
+            </h3>
             <div
                 style={{
                     display: "grid",
@@ -42,7 +61,7 @@ const WalletForm = ({ onWalletCreated }) => {
                 }}
             >
                 <div>
-                    <label>Название:</label>
+                    <label style={labelStyle}>Название:</label>
                     <input
                         type="text"
                         placeholder="Название кошелька"
@@ -50,11 +69,11 @@ const WalletForm = ({ onWalletCreated }) => {
                         onChange={(e) =>
                             setNewWallet({ ...newWallet, name: e.target.value })
                         }
-                        style={{ width: "100%", padding: "8px" }}
+                        style={inputStyle}
                     />
                 </div>
                 <div>
-                    <label>Баланс:</label>
+                    <label style={labelStyle}>Баланс:</label>
                     <input
                         type="number"
                         placeholder="0.00"
@@ -65,11 +84,11 @@ const WalletForm = ({ onWalletCreated }) => {
                                 balance: e.target.value,
                             })
                         }
-                        style={{ width: "100%", padding: "8px" }}
+                        style={inputStyle}
                     />
                 </div>
                 <div>
-                    <label>Валюта:</label>
+                    <label style={labelStyle}>Валюта:</label>
                     <select
                         value={newWallet.currency}
                         onChange={(e) =>
@@ -78,7 +97,7 @@ const WalletForm = ({ onWalletCreated }) => {
                                 currency: e.target.value,
                             })
                         }
-                        style={{ width: "100%", padding: "8px" }}
+                        style={inputStyle}
                     >
                         <option value="RUB">RUB</option>
                         <option value="USD">USD</option>
@@ -94,6 +113,7 @@ const WalletForm = ({ onWalletCreated }) => {
                         border: "none",
                         borderRadius: "4px",
                         cursor: "pointer",
+                        fontSize: "14px",
                     }}
                 >
                     Добавить

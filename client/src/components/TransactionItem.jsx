@@ -1,12 +1,10 @@
 import React from "react";
 
-// достаём категорию из конца описания
 const getCategoryFromDesc = (desc = "") => {
     const m = desc.match(/\[(.+?)\]$/);
     return m ? m[1] : "Без категории";
 };
 
-// убираем метку из описания
 const getCleanDesc = (desc = "") => {
     return desc.replace(/\s*\[.+?\]$/, "").trim() || "Без описания";
 };
@@ -28,8 +26,16 @@ const TransactionItem = ({ transaction }) => {
             type === "income"
                 ? `+${amount.toFixed(2)}`
                 : `-${amount.toFixed(2)}`;
-        const amountColor = type === "income" ? "#28a745" : "#dc3545";
-        const backgroundColor = type === "income" ? "#f0fff0" : "#fff0f0";
+
+        // Используем CSS-переменные для цветов
+        const amountColor =
+            type === "income" ? "var(--income-color)" : "var(--expense-color)";
+
+        // Фон адаптируется под тему
+        const backgroundColor =
+            type === "income"
+                ? "rgba(46, 204, 113, 0.1)" // полупрозрачный зелёный
+                : "rgba(231, 76, 60, 0.1)"; // полупрозрачный красный
 
         const walletName = transaction.wallet?.name || "Не указан";
 
@@ -38,9 +44,10 @@ const TransactionItem = ({ transaction }) => {
                 style={{
                     padding: "12px",
                     margin: "8px 0",
-                    border: "1px solid #dee2e6",
+                    border: "1px solid var(--border-color)",
                     borderRadius: "6px",
                     backgroundColor,
+                    color: "var(--text-color)",
                 }}
             >
                 <div
@@ -48,6 +55,7 @@ const TransactionItem = ({ transaction }) => {
                         fontWeight: "bold",
                         marginBottom: "8px",
                         fontSize: "16px",
+                        color: "var(--text-color)",
                     }}
                 >
                     {cleanDesc}
@@ -59,6 +67,7 @@ const TransactionItem = ({ transaction }) => {
                         gridTemplateColumns: "1fr 1fr",
                         gap: "8px",
                         fontSize: "14px",
+                        color: "var(--text-color)",
                     }}
                 >
                     <div>
@@ -78,8 +87,7 @@ const TransactionItem = ({ transaction }) => {
                     </div>
                     <div>
                         <strong>Категория:</strong>{" "}
-                        {localStorage.getItem("lastCategory") ||
-                            "Без категории"}
+                        {category || "Без категории"}
                     </div>
                     <div>
                         <strong>Кошелек:</strong> {walletName}

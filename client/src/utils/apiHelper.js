@@ -1,4 +1,3 @@
-// src/utils/apiHelper.js
 export const safeApiCall = async (apiFunction, defaultData = []) => {
     try {
         const response = await apiFunction();

@@ -8,41 +8,57 @@ const Header = ({ totalBalance, activeTab, onTabChange }) => {
             color: "#28a745",
             icon: "💳",
         },
-        { id: "wallets", label: "Кошельки", color: "#ffc107", icon: "💼" },
-        // { id: "analytics", label: "Анализ", color: "#17a2b8", icon: "📊" },
+        {
+            id: "wallets",
+            label: "Кошельки",
+            color: "#ffc107",
+            icon: "💼",
+        },
+        {
+            id: "goals",
+            label: "Цели",
+            color: "#9b59b6",
+            icon: "🎯",
+        },
     ];
 
     return (
         <header style={{ textAlign: "center", marginBottom: 30 }}>
-            <h1 style={{ color: "#2c3e50", marginBottom: 10 }}>
+            <h1 style={{ color: "var(--text-color)", marginBottom: 10 }}>
                 💰 Финансовый трекер
             </h1>
 
-            {/* Блок баланса */}
             <div
                 style={{
-                    background: totalBalance >= 0 ? "#e8f5e8" : "#ffe6e6",
+                    background:
+                        totalBalance >= 0
+                            ? "rgba(46, 204, 113, 0.2)"
+                            : "rgba(231, 76, 60, 0.2)",
                     padding: "20px",
                     borderRadius: 10,
-                    border: `2px solid ${totalBalance >= 0 ? "#28a745" : "#dc3545"}`,
+                    border: `2px solid ${totalBalance >= 0 ? "var(--income-color)" : "var(--expense-color)"}`,
                     display: "inline-block",
                     minWidth: 200,
                     marginBottom: 20,
                 }}
             >
-                <h2 style={{ margin: 0, color: "#2c3e50" }}>Общий баланс</h2>
+                <h2 style={{ margin: 0, color: "var(--text-color)" }}>
+                    Общий баланс
+                </h2>
                 <div
                     style={{
                         fontSize: "2em",
                         fontWeight: "bold",
-                        color: totalBalance >= 0 ? "#28a745" : "#dc3545",
+                        color:
+                            totalBalance >= 0
+                                ? "var(--income-color)"
+                                : "var(--expense-color)",
                     }}
                 >
                     {totalBalance.toFixed(2)} ₽
                 </div>
             </div>
 
-            {/* Вкладки */}
             <div
                 style={{
                     display: "flex",
@@ -61,9 +77,9 @@ const Header = ({ totalBalance, activeTab, onTabChange }) => {
                                 padding: "10px 20px",
                                 backgroundColor: isActive
                                     ? tab.color
-                                    : "#f8f9fa",
+                                    : "var(--card-bg)",
                                 color: isActive ? "white" : tab.color,
-                                border: `2px solid ${isActive ? tab.color : "#dee2e6"}`,
+                                border: `2px solid ${isActive ? tab.color : "var(--border-color)"}`,
                                 borderRadius: 6,
                                 cursor: "pointer",
                                 fontWeight: 600,
@@ -80,7 +96,7 @@ const Header = ({ totalBalance, activeTab, onTabChange }) => {
                             onMouseLeave={(e) => {
                                 if (!isActive)
                                     e.currentTarget.style.backgroundColor =
-                                        "#f8f9fa";
+                                        "var(--card-bg)";
                                 e.currentTarget.style.transform =
                                     "translateY(0)";
                             }}

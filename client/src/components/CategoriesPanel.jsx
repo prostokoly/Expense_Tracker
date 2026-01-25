@@ -1,4 +1,3 @@
-// src/components/CategoriesPanel.js
 import React from "react";
 import ErrorDisplay from "./ErrorBoundary";
 import { deleteCategory } from "../services/api";
