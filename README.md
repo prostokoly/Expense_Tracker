@@ -16,10 +16,10 @@ Backend:
   
 Запуск проекта:
 1. Установка зависимостей клиента
-cd client
+cd client,
 npm install
 2. Установка зависимостей сервера
-cd server
+cd server,
 npm install
 3. Запуск сервера
 npm run dev
