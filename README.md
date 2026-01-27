@@ -5,8 +5,7 @@ Expense Tracker
 Frontend:
 - React.js
 - Vite
-- CSS3
-- Axios для API запросов
+- Axios
   
 Backend:
 - Node.js
