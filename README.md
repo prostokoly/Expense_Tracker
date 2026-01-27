@@ -1,19 +1,6 @@
 Expense Tracker
 Персональное приложение для учета расходов и доходов с современным интерфейсом.
-Технологии.
 
-Frontend:
-- React.js
-- Vite
-- Axios
-  
-Backend:
-- Node.js
-- Express.js
-- Sequelize ORM
-- PostgreSQL
-
-  
 Запуск проекта:
 1. Установка зависимостей клиента
 cd client,
