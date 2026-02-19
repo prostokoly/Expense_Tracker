@@ -25,7 +25,7 @@ npm run dev
 
 4.В открывшемся диалоговом окне выберите вкладку Файл.
 
-5.Укажите путь к файлу studfront.sql (server\db\budget_tracker_db.sql).
+5.Укажите путь к файлу budget_tracker_db.sql (server\db\budget_tracker_db.sql).
 
 6.Нажмите Восстановить.
 
